@@ -1,0 +1,60 @@
+---
+title: "Metadatos PEC1"
+author: "Inés Agustí"
+date: "2024-11-01"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+# Metadatos del Conjunto de Datos Phospo_data
+
+## Introducción
+El conjunto de datos **Phospo_data** se ha creado a partir de análisis de espectrometría de masas, una técnica que permite identificar y cuantificar las modificaciones post-traduccionales (PTMs) en proteínas. Estas modificaciones son cambios que ocurren en las proteínas después de que se han sintetizado, y son fundamentales para la regulación de diversas funciones biológicas en los organismos.
+
+## Descripción General
+El conjunto de datos incluye observaciones sobre diferentes modificaciones de proteínas en dos condiciones experimentales específicas:
+- **MSS**: Modelo de Estudio de Sangre, que simula un entorno normal de sangre.
+- **PD**: Modelo de Enfermedad de Parkinson, que simula condiciones relacionadas con esta enfermedad 
+
+
+## Estructura de los Datos
+El conjunto de datos está organizado en una tabla que contiene un total de **1438 filas** y **18 columnas**. Cada fila representa una observación específica de una modificación de proteína, mientras que las columnas contienen diferentes tipos de información sobre estas observaciones.
+
+### Detalle de las Variables
+A continuación, se describe cada una de las variables que se encuentran en el conjunto de datos:
+
+1. **SequenceModifications**: Esta columna detalla el tipo de modificación que ha ocurrido en la secuencia de aminoácidos de la proteína. Por ejemplo, puede indicar si ha habido una fosforilación, acetilación, etc.
+
+2. **Accession**: Este es un identificador único asignado a cada proteína en las bases de datos de proteínas. Por ejemplo, un identificador seria "O00560".
+
+3. **Description**: Aquí se proporciona una descripción detallada de la proteína, que incluye su nombre y el organismo del cual proviene. 
+
+4. **Score**: Este valor numérico representa la calidad de la identificación de la modificación. Cuanto más alto sea el puntaje, mayor será la confianza en que la modificación ha sido correctamente identificada.
+
+5. **CLASS**: Esta variable clasifica la modificación de acuerdo con ciertos criterios. Por ejemplo, "H" podría indicar que la modificación es de alta calidad.
+
+6. **PHOSPHO**: Esta columna indica si la modificación detectada es una fosforilación. Se representa con "Y" (sí) si la modificación es una fosforilación, y puede estar en blanco si no lo es.
+
+### Datos de la Tabla
+Las columnas adicionales de la tabla representan diferentes muestras de proteínas. Cada celda de estas columnas contiene datos numéricos que reflejan la intensidad de la señal de las modificaciones detectadas.
+
+### Resumen de las Muestras
+El conjunto de datos se divide en dos grupos principales:
+
+- **Grupo MSS**: Este grupo incluye todas las muestras que se han recolectado en condiciones normales, relacionadas con el modelo de estudio de sangre. Es útil para establecer una línea base de comparación.
+  
+- **Grupo PD**: Este grupo comprende muestras que se han recolectado bajo condiciones relacionadas con la enfermedad de Parkinson. Analizar estas muestras ayuda a identificar cambios en las modificaciones de proteínas que pueden estar asociados con la enfermedad.
+
+## Información sobre el Preprocesamiento
+
+- **Eliminación de valores faltantes**: Se eliminaron las observaciones que contenían datos faltantes para asegurar que los análisis posteriores fueran precisos.
+
+- **Normalización de las intensidades de las señales**: Las intensidades de las señales se normalizaron para hacer comparaciones más equitativas entre las diferentes muestras y condiciones.
+
+Este preprocesamiento es esencial para garantizar que los resultados obtenidos del análisis sean fiables y válidos.
+
+
+
+

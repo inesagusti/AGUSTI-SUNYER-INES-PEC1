@@ -1,0 +1,171 @@
+---
+title: "PAC 1"
+author: "Inés Agustí"
+date: "2024-10-28"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(readxl)
+# Cargar el archivo Excel
+phospho_data <- read_excel("/Users/ines/Documents/Docus RStudio/Analisis datos omicos/PAC 1/TIO2+PTYR-human-MSS+MSIvsPD.XLSX")
+
+# Ver las primeras filas 
+head(phospho_data)
+View(phospho_data)
+```
+```{r}
+
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install("SummarizedExperiment")
+```
+```{r}
+# Extraer los datos numéricos
+data_matrix <- as.matrix(phospho_data[, grep("M\\d+_\\d+_(MSS|PD)", colnames(phospho_data))])
+
+# Crear un data frame con los metadatos de las filas
+row_metadata <- phospho_data[, c("SequenceModifications", "Accession", "Description", "Score", "CLASS", "PHOSPHO")]
+
+# Crear un data frame con los metadatos de las columnas (muestras)
+#  definimos el grupo al que pertenece cada muestra MSS o PD
+sample_metadata <- data.frame(
+  SampleID = colnames(data_matrix),
+  Group = ifelse(grepl("MSS", colnames(data_matrix)), "MSS", "PD")
+)
+
+```
+
+```{r}
+# Crear el objeto SummarizedExperiment
+phospho_SE <- SummarizedExperiment(
+  assays = list(counts = data_matrix),
+  rowData = row_metadata,
+  colData = sample_metadata
+)
+
+# Ver un resumen del objeto
+phospho_SE
+# Dimensiones 
+dim(data_matrix)
+dim(row_metadata)
+dim(sample_metadata)
+
+
+head(data_matrix)
+summary(data_matrix)
+
+```
+```{r}
+
+head(assay(phospho_SE))
+
+# Resumen de metadatos de las filas (proteínas)
+head(rowData(phospho_SE))
+
+# Resumen de metadatos de las columnas (muestras)
+colData(phospho_SE)
+
+```
+
+```{r}
+# Guardar el objeto SummarizedExperiment en un archivo .Rda
+save(phospho_SE, file = "phospho_data_SE.Rda")
+
+```
+
+```{r}
+# Calcular estadísticas básicas para las mediciones
+summary(assay(phospho_SE))
+```
+```{r}
+# Histograma de las mediciones de fosforilación
+hist(as.numeric(assay(phospho_SE)), main = "Distribución de las Mediciones de Fosforilación", xlab = "Intensidad de Fosforilación", col = "lightblue")
+
+# Boxplot de las mediciones por muestra
+boxplot(assay(phospho_SE), main = "Distribución de Fosforilación por Muestra", ylab = "Intensidad de Fosforilación", las = 2, col = "lightgreen")
+
+```
+```{r}
+# Extraer datos de fosforilación por grupo
+mss_data <- assay(phospho_SE)[, colData(phospho_SE)$Group == "MSS"]
+pd_data <- assay(phospho_SE)[, colData(phospho_SE)$Group == "PD"]
+
+# Calcular media y varianza por grupo
+mss_mean <- rowMeans(mss_data, na.rm = TRUE)
+pd_mean <- rowMeans(pd_data, na.rm = TRUE)
+
+# Comparación de la media entre MSS y PD
+boxplot(mss_mean, pd_mean, names = c("MSS", "PD"), main = "Comparación de Medias entre Grupos", ylab = "Media de Fosforilación")
+
+```
+
+```{r}
+# Guardar el objeto SummarizedExperiment en un archivo .Rda
+save(phospho_SE, file = "phospho_data_SE.Rda")
+
+```
+
+```{r}
+# Total de valores NA en el dataset
+sum(is.na(data_matrix))  
+
+```
+
+
+```{r}
+# Comparación de medias entre los grupos MSS y PD utilizando la prueba t de Welch
+
+# 1. Calcular la media de las intensidades de fosforilación para el grupo MSS
+mss_means <- rowMeans(mss_data, na.rm = TRUE)
+
+
+# 2. Calcular la media de las intensidades de fosforilación para el grupo PD
+pd_means <- rowMeans(pd_data, na.rm = TRUE)
+
+
+# 3. Realizar la prueba t de Welch para comparar las medias entre los dos grupos
+t_test_results <- t.test(mss_means, pd_means)
+
+
+print(t_test_results)
+
+```
+
+
+
+
+
+
+```{r}
+mss_mean <- rowMeans(mss_data, na.rm = TRUE)
+pd_mean <- rowMeans(pd_data, na.rm = TRUE)
+mss_sd <- apply(mss_data, 1, sd, na.rm = TRUE)
+pd_sd <- apply(pd_data, 1, sd, na.rm = TRUE)
+
+summary(mss_mean)
+summary(pd_mean)
+
+
+```
+```{r}
+t_test_results <- t.test(mss_mean, pd_mean)
+wilcox_test_results <- wilcox.test(mss_mean, pd_mean)
+
+```
+
+```{r}
+write.csv(phospho_data, "datos.csv", row.names = FALSE)
+
+```
+
+```{r}
+nrow(phospho_data) 
+ncol(phospho_data)
+```
+
